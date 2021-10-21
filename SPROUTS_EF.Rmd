@@ -10,13 +10,35 @@ library(hei)
 library(childsds)
 library(nhanesA)
 library(ggplot2)
+install.packages("SASmarkdown")
+library(SASmarkdown)
 ```
+
+```{sas ex-sas}
+proc means data=sashelp.class;
+run;
+```
+
+
+```{r}
+fped<-get_fped("2013/2014", "both") 
+nhanes_diet<-get_diet("2013/2014", "both")
+head(fped)
+head(nhanes_diet)
+
+nhanes_demo<-get_demo("2013/2014")
+head(nhanes_demo)
+```
+
+
 
 ```{r}
 postHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_POST_NX.CSV", sep = ",", header = T)
 pregHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_PREG_NX.csv", sep = ",", header = T)
 
 names(pregHEI)
+
+hei(fped, postHEI, ,agethresh = 2)
 ```
 
 ```{r}
