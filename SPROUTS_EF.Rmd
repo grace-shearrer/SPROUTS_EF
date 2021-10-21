@@ -2,4 +2,25 @@
 title: "SPROUTS EF"
 output: html_notebook
 ---
+```{r}
+#install.packages("devtools")
+#devtools::install_github("timfolsom/hei")
+#install.packages("nhanesA")
+library(hei)
+library(childsds)
+library(nhanesA)
+library(ggplot2)
+```
+
+```{r}
+postHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_POST_NX.CSV", sep = ",", header = T)
+pregHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_PREG_NX.csv", sep = ",", header = T)
+
+names(pregHEI)
+```
+
+```{r}
+hist(postHEI$HEI2015_post)
+hist(pregHEI$HEI2015_preg)
+```
 
