@@ -8,29 +8,39 @@ HEI<-function(df9, df4){
 }
 
 
-readdat<-function(df9, df4){
-  dat9<-read.delim(df9, header = T, sep = "\t")
+readdat<-function(pth, pat4, pat9){
+  setwd(pth)
+  dat9 <-
+    list.files(path = pth, pattern = pat9) %>% 
+    vroom(.)
+  dat9
   dat9 <- dat9[-c(1), ]
-  Var_int9<-c("Participant.ID","Date.of.Intake", "VEG0100","VEG0200","VEG0300","VEG0400","VEG0800","VEG0450","VEG0700","VEG0600","VEG0900","VEG0500", "VEG0100","VEG0700", 
+  Var_int9<-c("Participant ID","Date of Intake", "VEG0100","VEG0200","VEG0300","VEG0400","VEG0800","VEG0450","VEG0700","VEG0600","VEG0900","VEG0500", "VEG0100","VEG0700", 
               "FRU0100","FRU0200","FRU0300","FRU0400","FRU0500","FRU0600","FRU0700",
               "FRU0300","FRU0400","FRU0500","FRU0600","FRU0700",
               "DMF0100","DMR0100","DML0100","DMN0100","DMF0200","DMR0200",
               "DML0200","DML0300","DML0400","DCF0100","DCR0100","DCL0100","DCN0100",
-              "DYF0100","DYR0100","DYL0100","DYF0200","DYR0200","DYL0200","DYN0100" , "DOT0100" , "DOT0300","DOT0400" , "DOT0500","DOT0600" , "DML0500" , "DYF0300" , "DYR0300",
+              "DYF0100","DYR0100","DYL0100","DYF0200","DYR0200","DYL0200","DYN0100" , "DOT0100" , "DOT0300","DOT0400" , "DOT0500","DOT0600" , 
               "MRF0100","MRL0100","MRF0200","MRL0200",
               "MRF0300","MRL0300","MRF0400","MRL0400","MCF0200","MCL0200","MRF0500",
               "MPF0100","MPL0100","MPF0200","MFF0100","MFL0100","MFF0200","MSL0100",
               "MSF0100","MCF0100","MCL0100","MOF0100","MOF0200","MOF0300","MOF0400",
               "MOF0500","MOF0600","MOF0700","VEG0700","MFF0100", "MFL0100","MFF0200","MSL0100","MSF0100","MOF0500","MOF0600","MOF0700","VEG0700")
+  
   dat9<-dat9[,Var_int9]
-  dat4 <- read.delim(df4, header=TRUE, sep="\t")
-  Var_int4<-c("Participant.ID","Date.of.Intake", 
-              "Whole.Grains..ounce.equivalents.",
-              "Sodium..mg.","Refined.Grains..ounce.equivalents.","Added.Sugars..by.Available.Carbohydrate...g.",
-              "Total.Saturated.Fatty.Acids..SFA...g.","Total.Monounsaturated.Fatty.Acids..MUFA...g.","Total.Polyunsaturated.Fatty.Acids..PUFA...g.","Energy..kcal.")
+  
+  dat4 <-
+    list.files(path = pth, pattern = pat4) %>% 
+    vroom(.)
+  dat4
+  
+  Var_int4<-c("Participant ID","Date of Intake", 
+              "Whole Grains (ounce equivalents)",
+              "Sodium (mg)","Refined Grains (ounce equivalents)","Added Sugars (by Available Carbohydrate) (g)",
+              "Total Saturated Fatty Acids (SFA) (g)","Total Monounsaturated Fatty Acids (MUFA) (g)","Total Polyunsaturated Fatty Acids (PUFA) (g)","Energy (kcal)")
   dat4<-dat4[,Var_int4]
-  dat <- merge(dat4,dat9,by=c("Participant.ID","Date.of.Intake"))
-  dat[3:100] <- sapply( dat[3:100], as.numeric )
+  dat <- merge(dat4,dat9,by=c("Participant ID","Date of Intake"))
+  dat[3:97] <- sapply( dat[3:97], as.numeric )
   return(dat)
 }
 
