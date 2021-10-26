@@ -11,28 +11,224 @@ library(childsds)
 library(nhanesA)
 library(ggplot2)
 library(tidyverse)
+library(stringi)
+library(Hmisc)
 ```
 
 
 
 ```{r}
 mom_dat<-HEI("~/Google Drive/SPROUTS_EF/data/SPROUTS/NDSR/all_mom/", "*04.txt", "*09.txt")
+mom_dat$famID <- gsub('-1', '', mom_dat$`Participant ID`)
+keep<-c("Participant ID", "Date of Intake", "heiveg" , "heibngrn" , "heitotfrt" , "heiwholefrt" , "heiwholegrain" ,"heidairy" , "heitotpro" , "heiseaplantpro" , "heifattyacid" , "heirefgrain" , "heisodi" , "heisfa" ,"heiaddsug",
+"HEI","famID")
+mom_dat<-mom_dat[keep]
 ```
 
 ```{r}
 child_dat<-HEI("~/Google Drive/SPROUTS_EF/data/SPROUTS/NDSR/all_child/", "*04.txt", "*09.txt")
+
+child_dat$famID <- gsub('-2', '', child_dat$`Participant ID`)
+keep<-c("Participant ID", "Date of Intake", "heiveg" , "heibngrn" , "heitotfrt" , "heiwholefrt" , "heiwholegrain" ,"heidairy" , "heitotpro" , "heiseaplantpro" , "heifattyacid" , "heirefgrain" , "heisodi" , "heisfa" ,"heiaddsug",
+"HEI","famID")
+child_dat<-child_dat[keep]
 ```
 
+```{r}
+child_dat2<-read.table("~/Google Drive/SPROUTS_EF/data/SPROUTS/t1Bx_CTDB_child_05_03_21.csv", header = T, sep = ",")
+names(child_dat2)
+keep<-c("patID","CHILD_SEX" , "HEIGHT_CM_CHILD" , "HEIGHT_CM_CHILD_2", "WEIGHT_KG_CHILD","WEIGHT_KG_CHILD_2",            
+"DELAY_GRAT_ASSESSMENT", "DELAY_GRAT_FOOD" ,"DELAY_GRAT_RING_BELL", "DELAY_GRAT_TIME", "DELAY_GRAT_CHILD_BEHAVIOR",   "TOY_ASSESSMENT_1",           
+"TOY_CHILD_BEHAVIOR_1",        "TOY_ASSESSMENT_2",            "TOY_CHILD_BEHAVIOR_2","CHILD_ATE_TIME",              "CHILD_ATE_TYPE",              "CHILD_SLEPT_TIME")
+
+child_dat2<-child_dat2[keep]
+colnames(child_dat2)[1] <- "Participant ID"
+
+child_dat2$famID <- gsub('-2', '', child_dat2$`Participant ID`)
+child_dat2[3:6]<-sapply( child_dat2[3:6], as.numeric )
+
+child_dat2$Ht_mean <- rowMeans(child_dat2[,c('HEIGHT_CM_CHILD', 'HEIGHT_CM_CHILD_2')], na.rm=TRUE)
+child_dat2$Wt_mean <- rowMeans(child_dat2[,c('WEIGHT_KG_CHILD', 'WEIGHT_KG_CHILD_2')], na.rm=TRUE)
+
+```
 
 ```{r}
 postHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_POST_NX.CSV", sep = ",", header = T)
 pregHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_PREG_NX.csv", sep = ",", header = T)
+PEAS_dat<-merge(pregHEI, postHEI, by = c("UserName", "Patid"))
+colnames(PEAS_dat)[2] <- "Participant ID"
+PEAS_dat$`Participant ID`<-as.character(PEAS_dat$`Participant ID`)
+PEAS_dat$famID<-stri_sub(PEAS_dat$`Participant ID`, 1,4)
+keep<-c("Participant ID", "HEI2015C1_TOTALVEG_preg", "HEI2015C2_GREEN_AND_BEAN_preg",
+"HEI2015C3_TOTALFRUIT_preg",                       "HEI2015C4_WHOLEFRUIT_preg",    
+"HEI2015C5_WHOLEGRAIN_preg",                    "HEI2015C6_TOTALDAIRY_preg" ,   
+"HEI2015C7_TOTPROT_preg",                         "HEI2015C8_SEAPLANT_PROT_preg", 
+"HEI2015C9_FATTYACID_preg",                         "HEI2015C10_SODIUM_preg" ,      
+"HEI2015C11_REFINEDGRAIN_preg",                                 
+ "HEI2015C12_SFAT_preg",          "HEI2015C13_ADDSUG_preg",       
+"HEI2015_preg",
+"HEI2015C1_TOTALVEG_post" ,                
+"HEI2015C2_GREEN_AND_BEAN_post", "HEI2015C3_TOTALFRUIT_post",                      
+"HEI2015C4_WHOLEFRUIT_post",     "HEI2015C5_WHOLEGRAIN_post",             
+"HEI2015C6_TOTALDAIRY_post",     "HEI2015C7_TOTPROT_post",                   
+"HEI2015C8_SEAPLANT_PROT_post",  "HEI2015C9_FATTYACID_post" ,                      
+"HEI2015C10_SODIUM_post",        "HEI2015C11_REFINEDGRAIN_post" ,              
+"HEI2015C12_SFAT_post",                       
+"HEI2015C13_ADDSUG_post", "HEI2015_post",                
+"famID")
+PEAS_dat<-PEAS_dat[keep]
+
 ```
 
 ```{r}
 summary(mom_dat$HEI)
-summary(postHEI$HEI2015_post)
-summary(pregHEI$HEI2015_preg)
+summary(PEAS_dat$HEI2015_post)
+summary(PEAS_dat$HEI2015_preg)
 summary(child_dat$HEI)
 ```
+
+```{r}
+EF_dat<-vroom("~/Google Drive/SPROUTS_EF/data/SPROUTS/t1Bx_exec_func_05_03_21.csv")
+
+
+EF_dat[2:57] <- sapply( EF_dat[2:57], as.numeric )
+
+colnames(EF_dat)[1] <- "Participant ID"
+
+keep<-c('Participant ID','PTP_PrpCor','Hse_PrpCor', 'Arr_PrpCorSwitch', 'SSG_PrpCor', 'AgeFirstAdministration' )
+EF_dat<-EF_dat[keep]
+child_dat<-merge(child_dat, EF_dat, by = "Participant ID")
+child_dat<-merge(child_dat, child_dat2, by = c("Participant ID", "famID"))
+```
+
+EF composite; EFcomp = mean(Arr_PrpCorSwitch, SSG_PrpCor, Hse_PrpCor, PTP_PrpCor).
+
+Inhibitory Control composite; ICcomp = mean (Arr_PrpCorSwitch, SSG_PrpCor).
+
+Working Memory composite; WMcomp = mean (Hse_PrpCor, PTP_PrpCor).
+
+```{r}
+child_dat$EF_mean <- rowMeans(child_dat[,c('PTP_PrpCor', 'Hse_PrpCor', 'Arr_PrpCorSwitch','SSG_PrpCor')], na.rm=TRUE)
+child_dat$Inhib_mean <- rowMeans(child_dat[,c('Arr_PrpCorSwitch','SSG_PrpCor')], na.rm=TRUE)
+child_dat$WM_mean <- rowMeans(child_dat[,c('PTP_PrpCor', 'Hse_PrpCor')], na.rm=TRUE)
+summary(child_dat$Inhib_mean)
+summary(child_dat$WM_mean)
+summary(child_dat$EF_mean)
+```
+
+
+
+```{r}
+child_dat<-subset(child_dat, child_dat$Wt_mean < 100)
+child_dat<-subset(child_dat, child_dat$Wt_mean > 0)
+child_dat<-subset(child_dat, child_dat$Ht_mean > 0)
+
+child_dat$BMI<-bmi(child_dat$Wt_mean, child_dat$Ht_mean)
+summary(child_dat$BMI)
+summary(as.factor(child_dat$CHILD_SEX))
+```
+
+
+```{r}
+child_dat$bmi_perc <- sds(child_dat$BMI,
+age = child_dat$AgeFirstAdministration,
+sex = child_dat$CHILD_SEX, male = "MALE", female = "FEMALE",
+ref = cdc.ref,
+item = "bmi",
+type = "perc")
+summary(child_dat$bmi_perc)
+```
+
+
+
+```{r}
+test<-merge(child_dat, mom_dat, by = "famID")
+
+new_colnames <- gsub(".x", "_child", colnames(test))
+colnames(test) <- new_colnames
+
+new_colnames <- gsub(".y", "_mom", colnames(test))
+colnames(test) <- new_colnames
+
+test<-merge(test, PEAS_dat, by = "famID")
+```
+
+#correlations
+```{r}
+vars<-c("Participant ID_child", "heiveg_child",                 
+ "heibngrn_child","heitotfrt_child","heiwholefrt_child","heiwholegrain_child",          
+ "heidai_mom_child","heitotpro_child","heiseaplantpro_child","heifat_momacid_child",         
+"heirefgrain_child","heisodi_child", "heisfa_child","heiaddsug_child" ,             
+"HEI_child","PTP_PrpCor", "Hse_PrpCor", "Arr_PrpCorSwitch",             
+"SSG_PrpCor","EF_mean", "Inhib_mean" ,"WM_mean",                      
+"heiveg_mom","heibngrn_mom",                 
+"heitotfrt_mom", "heiwholefrt_mom","heiwholegrain_mom","heidai_mom_mom",               
+"heitotpro_mom","heiseaplantpro_mom","heifat_momacid_mom","heirefgrain_mom",              
+"heisodi_mom","heisfa_mom", "heiaddsug_mom", "HEI_mom",                      
+"HEI2015C1_TOTALVEG_preg","HEI2015C2_GREEN_AND_BEAN_preg", "HEI2015C3_TOTALFRUIT_preg",    
+"HEI2015C4_WHOLEFRUIT_preg",     "HEI2015C5_WHOLEGRAIN_preg",     "HEI2015C6_TOTALDAIRY_preg",     "HEI2015C7_TOTPROT_preg" ,      
+"HEI2015C8_SEAPLANT_PROT_preg",  "HEI2015C9_FATTYACID_preg",      "HEI2015C10_SODIUM_preg",        "HEI2015C11_REFINEDGRAIN_preg", 
+"HEI2015C12_SFAT_preg",          "HEI2015C13_ADDSUG_preg",        "HEI2015_preg",                  "HEI2015C1_TOTALVEG_post",      
+"HEI2015C2_GREEN_AND_BEAN_post", "HEI2015C3_TOTALFRUIT_post",     "HEI2015C4_WHOLEFRUIT_post",     "HEI2015C5_WHOLEGRAIN_post",    
+"HEI2015C6_TOTALDAIRY_post",     "HEI2015C7_TOTPROT_post",        "HEI2015C8_SEAPLANT_PROT_post",  "HEI2015C9_FATTYACID_post",     
+"HEI2015C10_SODIUM_post",        "HEI2015C11_REFINEDGRAIN_post",  "HEI2015C12_SFAT_post",          "HEI2015C13_ADDSUG_post",       
+"HEI2015_post", "bmi_perc","AgeFirstAdministration" )
+
+interest<-test[vars]
+
+int_groups<-interest %>%  
+  group_by(`Participant ID_child`) %>% 
+  summarise_at(vars( "heiveg_child",                 
+ "heibngrn_child","heitotfrt_child","heiwholefrt_child","heiwholegrain_child",          
+ "heidai_mom_child","heitotpro_child","heiseaplantpro_child","heifat_momacid_child",         
+"heirefgrain_child","heisodi_child", "heisfa_child","heiaddsug_child" ,             
+"HEI_child","PTP_PrpCor", "Hse_PrpCor", "Arr_PrpCorSwitch",             
+"SSG_PrpCor","EF_mean", "Inhib_mean" ,"WM_mean",                      
+"heiveg_mom","heibngrn_mom",                 
+"heitotfrt_mom", "heiwholefrt_mom","heiwholegrain_mom","heidai_mom_mom",               
+"heitotpro_mom","heiseaplantpro_mom","heifat_momacid_mom","heirefgrain_mom",              
+"heisodi_mom","heisfa_mom", "heiaddsug_mom", "HEI_mom",                      
+"HEI2015C1_TOTALVEG_preg","HEI2015C2_GREEN_AND_BEAN_preg", "HEI2015C3_TOTALFRUIT_preg",    
+"HEI2015C4_WHOLEFRUIT_preg",     "HEI2015C5_WHOLEGRAIN_preg",     "HEI2015C6_TOTALDAIRY_preg",     "HEI2015C7_TOTPROT_preg" ,      
+"HEI2015C8_SEAPLANT_PROT_preg",  "HEI2015C9_FATTYACID_preg",      "HEI2015C10_SODIUM_preg",        "HEI2015C11_REFINEDGRAIN_preg", 
+"HEI2015C12_SFAT_preg",          "HEI2015C13_ADDSUG_preg",        "HEI2015_preg",                  "HEI2015C1_TOTALVEG_post",      
+"HEI2015C2_GREEN_AND_BEAN_post", "HEI2015C3_TOTALFRUIT_post",     "HEI2015C4_WHOLEFRUIT_post",     "HEI2015C5_WHOLEGRAIN_post",    
+"HEI2015C6_TOTALDAIRY_post",     "HEI2015C7_TOTPROT_post",        "HEI2015C8_SEAPLANT_PROT_post",  "HEI2015C9_FATTYACID_post",     
+"HEI2015C10_SODIUM_post",        "HEI2015C11_REFINEDGRAIN_post",  "HEI2015C12_SFAT_post",          "HEI2015C13_ADDSUG_post",       
+"HEI2015_post", "bmi_perc","AgeFirstAdministration"), mean)
+
+correlations<-rcorr(as.matrix(int_groups[2:66]), type="pearson") 
+arrs<-as.data.frame(correlations$r)
+pss<-as.data.frame(correlations$P)
+
+View(arrs)
+```
+
+
+
+
+
+
+```{r}
+keep<-c(              
+"HEI_child","PTP_PrpCor", "Hse_PrpCor", "Arr_PrpCorSwitch",             
+"SSG_PrpCor","EF_mean", "Inhib_mean" ,"WM_mean",                      
+"HEI_mom",                      
+"HEI2015_preg",                       
+"HEI2015_post", "bmi_perc","AgeFirstAdministration")
+mat1<-int_groups[keep]
+hist(mat1)
+rcorr(as.matrix(mat1), type="pearson") 
+```
+
+
+
+
+
+
+
+
+
+
+
 

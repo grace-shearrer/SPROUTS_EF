@@ -1,3 +1,10 @@
+
+bmi<-function(wt, ht){
+  bmi = (wt)/(ht*0.01)^2
+  return(bmi)
+}
+
+
 HEI<-function(pth, pat4, pat9){
   dat<-readdat(pth, pat4, pat9)
   dat<-adequacy(dat)
