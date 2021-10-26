@@ -1,5 +1,5 @@
-HEI<-function(df9, df4){
-  dat<-readdat(df9, df4)
+HEI<-function(pth, pat4, pat9){
+  dat<-readdat(pth, pat4, pat9)
   dat<-adequacy(dat)
   dat<-moderation(dat)
   dat<-totals(dat)
@@ -60,10 +60,10 @@ adequacy<-function(dat){
   dat$hei_wholefruit=(dat$FRU0300+dat$FRU0400+dat$FRU0500+dat$FRU0600+dat$FRU0700)/2
   
   ##WHOLE GRAINS COMPONENT
-  dat$hei_wholegrains=dat$Whole.Grains..ounce.equivalents.
+  dat$hei_wholegrains=dat$`Whole Grains (ounce equivalents)`
   
   ## DAIRY COMPONENT INCLUDE DAIRY GROUPS ADDED IN 2019
-  dat$hei_dairy=dat$DMF0100+dat$DMR0100+dat$DML0100+dat$DMN0100+dat$DMF0200+dat$DMR0200+ dat$DML0200+dat$DML0300+dat$DML0400+dat$DCF0100+dat$DCR0100+dat$DCL0100+dat$DCN0100+ dat$DYF0100+dat$DYR0100+dat$DYL0100+dat$DYF0200+dat$DYR0200+dat$DYL0200+dat$DYN0100 + ((dat$DOT0100)/3) + dat$DOT0300+dat$DOT0400 + dat$DOT0500+dat$DOT0600 + dat$DML0500 + dat$DYF0300 + dat$DYR0300 
+  dat$hei_dairy = dat$DMF0100+dat$DMR0100+dat$DML0100+dat$DMN0100+dat$DMF0200+dat$DMR0200+ dat$DML0200+dat$DML0300+dat$DML0400+dat$DCF0100+dat$DCR0100+dat$DCL0100+dat$DCN0100+ dat$DYF0100+dat$DYR0100+dat$DYL0100+dat$DYF0200+dat$DYR0200+dat$DYL0200+dat$DYN0100 + ((dat$DOT0100)/3) + dat$DOT0300+dat$DOT0400 + dat$DOT0500+dat$DOT0600 
   
   #removed DYL0300 + DOT0900
   
@@ -86,18 +86,18 @@ moderation<-function(dat){
   ## SODIUM COMPONENT
   
   
-  dat$hei_sodium = dat$Sodium..mg./1000
+  dat$hei_sodium = dat$`Sodium (mg)`/1000
   
   ## REFINED GRAINS COMPONENT
-  dat$hei_refinedgrains=dat$Refined.Grains..ounce.equivalents.
+  dat$hei_refinedgrains=dat$`Refined Grains (ounce equivalents)`
   
   ## ADDED SUGARS COMPONENT
-  dat$hei_addedsugars=dat$Added.Sugars..by.Available.Carbohydrate...g.*4 
-  dat$addsug_perc = 100*((dat$hei_addedsugars)/dat$Energy..kcal.)
+  dat$hei_addedsugars=dat$`Added Sugars (by Available Carbohydrate) (g)`*4 
+  dat$addsug_perc = 100*((dat$hei_addedsugars)/dat$`Energy (kcal)`)
   
   ## Saturated fat
-  dat$sfa_perc = 100*((dat$Total.Saturated.Fatty.Acids..SFA...g.*9)/dat$Energy..kcal.)
-  dat$fatratio = (dat$Total.Monounsaturated.Fatty.Acids..MUFA...g. + dat$Total.Polyunsaturated.Fatty.Acids..PUFA...g.)/dat$Total.Saturated.Fatty.Acids..SFA...g.
+  dat$sfa_perc = 100*((dat$`Total Saturated Fatty Acids (SFA) (g)`*9)/dat$`Energy (kcal)`)
+  dat$fatratio = (dat$`Total Monounsaturated Fatty Acids (MUFA) (g)` + dat$`Total Polyunsaturated Fatty Acids (PUFA) (g)`)/dat$`Total Saturated Fatty Acids (SFA) (g)`
   return(dat)
 }
 
@@ -105,63 +105,63 @@ moderation<-function(dat){
 
 totals<-function(dat){
   # total veggies
-  dat$vegden <- dat$hei_totveg / (dat$Energy..kcal./1000)
+  dat$vegden <- dat$hei_totveg / (dat$`Energy (kcal)`/1000)
   dat$heiveg <- 5*(dat$vegden/1.1)
   dat$heiveg <- ifelse(dat$heiveg > 5, 5, dat$heiveg)
   
   # heibngrn
   # beans and greens
-  dat$bngrden <- dat$hei_greensbeans / (dat$Energy..kcal./1000)
+  dat$bngrden <- dat$hei_greensbeans / (dat$`Energy (kcal)`/1000)
   dat$heibngrn <- 5*(dat$bngrden/0.2)
   dat$heibngrn  <- ifelse(dat$heibngrn  > 5, 5, dat$heibngrn)
   
   # heitotfr
   # total fruit
-  dat$frtden <- dat$hei_totfruit/(dat$Energy..kcal./1000)
+  dat$frtden <- dat$hei_totfruit/(dat$`Energy (kcal)`/1000)
   dat$heitotfrt <- 5*(dat$frtden/0.8)
   dat$heitotfrt <- ifelse(dat$heitotfrt > 5, 5, dat$heitotfrt)
   
   # heiwholefrt
   # whole fruit
-  dat$wholefrtden <- dat$hei_wholefruit/(dat$Energy..kcal./1000)
+  dat$wholefrtden <- dat$hei_wholefruit/(dat$`Energy (kcal)`/1000)
   dat$heiwholefrt <- 5*(dat$wholefrtden/0.4)
   dat$heiwholefrt <- ifelse(dat$heiwholefrt > 5, 5, dat$heiwholefrt)
   
   # heiwholegrain
   # whole grain
-  dat$wholegrainden <- dat$hei_wholegrains/(dat$Energy..kcal./1000)
+  dat$wholegrainden <- dat$hei_wholegrains/(dat$`Energy (kcal)`/1000)
   dat$heiwholegrain <- 10*(dat$wholegrainden/1.5)
   dat$heiwholegrain <- ifelse(dat$heiwholegrain > 10, 10, dat$heiwholegrain)
   
   # heidairy
   # dairy
-  dat$dairyden <- dat$hei_dairy/(dat$Energy..kcal./1000)
+  dat$dairyden <- dat$hei_dairy/(dat$`Energy (kcal)`/1000)
   dat$heidairy <- 10*(dat$dairyden/1.3)
   dat$heidairy <- ifelse(dat$heidairy > 10, 10, dat$heidairy)
   
   # heitotpro
   # total protein
-  dat$totproden <- dat$hei_totproteins/(dat$Energy..kcal./1000)
+  dat$totproden <- dat$hei_totproteins/(dat$`Energy (kcal)`/1000)
   dat$heitotpro <- 5*(dat$totproden/2.5)
   dat$heitotpro <- ifelse(dat$heitotpro > 5, 5, dat$heitotpro)
   
   # heiseaplantpro
   # seaplant protein
-  dat$seaplantden <- dat$hei_seafoodplantprot/(dat$Energy..kcal./1000)
+  dat$seaplantden <- dat$hei_seafoodplantprot/(dat$`Energy (kcal)`/1000)
   dat$heiseaplantpro <- 5*(dat$seaplantden/0.8)
   dat$heiseaplantpro <- ifelse(dat$heiseaplantpro > 5, 5, dat$heiseaplantpro)
   
   # heifattyacid
   # fatty acid
-  dat$faratio <- ifelse(dat$Total.Saturated.Fatty.Acids..SFA...g. > 0,
-                        dat$fatratio/ dat$Total.Saturated.Fatty.Acids..SFA...g.,
+  dat$faratio <- ifelse(dat$`Total Saturated Fatty Acids (SFA) (g)` > 0,
+                        dat$fatratio/ dat$`Total Saturated Fatty Acids (SFA) (g)`,
                         0)
   
-  dat$heifattyacid <- ifelse(dat$Total.Saturated.Fatty.Acids..SFA...g. == 0 & dat$fatratio == 0,
+  dat$heifattyacid <- ifelse(dat$`Total Saturated Fatty Acids (SFA) (g)` == 0 & dat$fatratio == 0,
                              10,
                              NA)
   
-  dat$heifattyacid <- ifelse(dat$Total.Saturated.Fatty.Acids..SFA...g. == 0 & dat$fatratio > 0,
+  dat$heifattyacid <- ifelse(dat$`Total Saturated Fatty Acids (SFA) (g)` == 0 & dat$fatratio > 0,
                              10,
                              dat$heifattyacid)
   
@@ -171,7 +171,7 @@ totals<-function(dat){
   
   dat$heifattyacid <- ifelse(dat$faratio <= 1.2,
                              0,
-                             heifattyacid)
+                             dat$heifattyacid)
   
   dat$heifattyacid <- ifelse(is.na(dat$heifattyacid),
                              10*((dat$faratio-1.2)/(2.5-1.2)),
@@ -189,12 +189,12 @@ totals<-function(dat){
   dat$heisfa <- ifelse(is.na(dat$heisfa),
                        10 - (10*(dat$sfa_perc - 8)/(16-8)),
                        dat$heisfa)
-  summary(dat$heisfa)
+  
   
   # heisodi
   # sodium
   head(dat$hei_)
-  dat$sodden <- dat$hei_sodium / dat$Energy..kcal.
+  dat$sodden <- dat$hei_sodium / dat$`Energy (kcal)`
   
   dat$heisodi <- ifelse(dat$sodden <= 1.1,
                         10,
@@ -220,7 +220,7 @@ totals<-function(dat){
   
   # heirefgrain
   # refined grain
-  dat$refgrainnden <- dat$hei_refinedgrains / (dat$Energy..kcal./1000)
+  dat$refgrainnden <- dat$hei_refinedgrains / (dat$`Energy (kcal)`/1000)
   
   dat$heirefgrain <- ifelse(dat$refgrainnden <= 1.8,
                             10,

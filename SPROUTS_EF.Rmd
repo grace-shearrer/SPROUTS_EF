@@ -6,43 +6,33 @@ output: html_notebook
 #install.packages("devtools")
 #devtools::install_github("timfolsom/hei")
 #install.packages("nhanesA")
-library(hei)
+source("~/Google Drive/SPROUTS_EF/scripts/funky.R")
 library(childsds)
 library(nhanesA)
 library(ggplot2)
-install.packages("SASmarkdown")
-library(SASmarkdown)
+library(tidyverse)
 ```
 
-```{sas ex-sas}
-proc means data=sashelp.class;
-run;
-```
 
 
 ```{r}
-fped<-get_fped("2013/2014", "both") 
-nhanes_diet<-get_diet("2013/2014", "both")
-head(fped)
-head(nhanes_diet)
-
-nhanes_demo<-get_demo("2013/2014")
-head(nhanes_demo)
+mom_dat<-HEI("~/Google Drive/SPROUTS_EF/data/SPROUTS/NDSR/all_mom/", "*04.txt", "*09.txt")
 ```
 
+```{r}
+child_dat<-HEI("~/Google Drive/SPROUTS_EF/data/SPROUTS/NDSR/all_child/", "*04.txt", "*09.txt")
+```
 
 
 ```{r}
 postHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_POST_NX.CSV", sep = ",", header = T)
 pregHEI<-read.table("~/Google Drive/SPROUTS_EF/data/BASE/HEI2015SCORE_UNC_2020_PREG_NX.csv", sep = ",", header = T)
-
-names(pregHEI)
-
-hei(fped, postHEI, ,agethresh = 2)
 ```
 
 ```{r}
-hist(postHEI$HEI2015_post)
-hist(pregHEI$HEI2015_preg)
+summary(mom_dat$HEI)
+summary(postHEI$HEI2015_post)
+summary(pregHEI$HEI2015_preg)
+summary(child_dat$HEI)
 ```
 
